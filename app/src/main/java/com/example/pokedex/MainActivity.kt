@@ -27,17 +27,23 @@ class MainActivity : AppCompatActivity() {
                 getPokeList(binding.etPokeNumber.text.toString().toInt())
             }
         }
-        getPokeList(5)
 
     }
     fun getPokeList(listAmount: Int){
         val url = "https://pokeapi.co/api/v2/pokemon/?limit=${listAmount}"
-        val jsonRequest = JsonObjectRequest(url, Response.Listener<JSONObject>{ response ->
-            Log.i("JSONRESPONSE", response.getJSONArray("results").toString())
+        val jsonRequest = JsonObjectRequest(url, { response ->
+            //Log.i("JSONRESPONSE", response.getJSONArray("results").toString())
+            val jsonArreglo = response.getJSONArray("results")
+            var arregloDePokemon: ArrayList<JSONObject> = arrayListOf()
+            for (i in 0 until response.getJSONArray("results").length()){
+                arregloDePokemon.add(jsonArreglo.getJSONObject(i))
+            }
+            binding.rvPokeList.adapter = MainAdapter(arregloDePokemon)
+            Log.i("JSONARRAY", arregloDePokemon[1].toString())
         },
-        Response.ErrorListener { error ->
-            Log.w("JSONRESPONSE", error.message as String)
-        })
+            { error ->
+                Log.w("JSONRESPONSE", error.message as String)
+            })
         queue.add(jsonRequest)
     }
 
